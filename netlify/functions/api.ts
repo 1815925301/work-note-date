@@ -1,4 +1,5 @@
 import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions'
+import { connectLambda } from '@netlify/blobs'
 import serverless from 'serverless-http'
 import { createApp } from '../../server/app.js'
 
@@ -18,6 +19,8 @@ function normalizePath(event: HandlerEvent) {
 }
 
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+  connectLambda(event)
+
   const netlifyHandler = await getServerlessHandler()
   return netlifyHandler(
     {

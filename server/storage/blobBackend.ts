@@ -3,29 +3,38 @@ import type { StorageBackend } from './backend.js'
 
 const STORE_NAME = 'work-note-data'
 
-export function createBlobBackend(): StorageBackend {
-  const store = getStore({ name: STORE_NAME, consistency: 'strong' })
+function getBlobStore() {
+  const siteID = process.env.NETLIFY_SITE_ID
+  const token = process.env.NETLIFY_BLOB_READ_WRITE_TOKEN
 
+  if (siteID && token) {
+    return getStore({ name: STORE_NAME, siteID, token, consistency: 'strong' })
+  }
+
+  return getStore({ name: STORE_NAME, consistency: 'strong' })
+}
+
+export function createBlobBackend(): StorageBackend {
   return {
     async ensureDir() {
       /* no-op for blob storage */
     },
 
     async read(key: string) {
-      return store.get(key, { type: 'text' })
+      return getBlobStore().get(key, { type: 'text' })
     },
 
     async write(key: string, content: string) {
-      await store.set(key, content)
+      await getBlobStore().set(key, content)
     },
 
     async delete(key: string) {
-      await store.delete(key)
+      await getBlobStore().delete(key)
     },
 
     async listKeys(prefix: string) {
       const normalizedPrefix = prefix.replace(/\\/g, '/').replace(/\/$/, '')
-      const { blobs } = await store.list({ prefix: `${normalizedPrefix}/` })
+      const { blobs } = await getBlobStore().list({ prefix: `${normalizedPrefix}/` })
       return blobs.map((blob) => blob.key)
     },
   }
