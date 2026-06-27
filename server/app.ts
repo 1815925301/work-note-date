@@ -1,6 +1,8 @@
 import cors from 'cors'
 import express from 'express'
 import path from 'path'
+import { requireAuth } from './auth.js'
+import { createAuthRouter } from './routes/auth.js'
 import { createBackupRouter } from './routes/backup.js'
 import { createEntriesRouter } from './routes/entries.js'
 import { initStorage, getStorageKind, type StorageKind } from './storage/backend.js'
@@ -14,7 +16,9 @@ export async function createApp(dataDir: string, storage: StorageKind = 'filesys
   app.use(cors())
   app.use(express.json({ limit: '2mb' }))
 
-  app.get('/api/health', (_req, res) => {
+  app.use('/api/auth', createAuthRouter())
+
+  app.get('/api/health', requireAuth, (_req, res) => {
     res.json({
       ok: true,
       dataDir,
@@ -22,8 +26,8 @@ export async function createApp(dataDir: string, storage: StorageKind = 'filesys
     })
   })
 
-  app.use('/api/entries', createEntriesRouter(dataDir))
-  app.use('/api/backup', createBackupRouter(dataDir))
+  app.use('/api/entries', requireAuth, createEntriesRouter(dataDir))
+  app.use('/api/backup', requireAuth, createBackupRouter(dataDir))
 
   return app
 }

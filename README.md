@@ -57,7 +57,13 @@ data/
    - Publish directory: `dist`
    - Functions directory: `netlify/functions`
 3. **不要**设置 `VITE_API_BASE` 环境变量（或留空），前端会通过同域 `/api/*` 访问 Functions
-4. 部署完成后，在应用内使用「备份/恢复」功能导入本地 `data/` 目录中的数据
+4. 在 **Environment variables** 中设置 `APP_PASSWORD`（访问密码，必填才能启用保护）
+5. 可选：设置 `APP_SECRET`（登录 token 签名密钥，建议与密码不同）
+6. 部署完成后，在应用内使用「备份/恢复」功能导入本地 `data/` 目录中的数据
+
+### 访问保护
+
+设置 `APP_PASSWORD` 后，所有 API 和页面都需要先登录。未设置时（如本地开发）不启用密码保护。
 
 ### 本地 Netlify 开发
 

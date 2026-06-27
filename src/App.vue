@@ -2,10 +2,14 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
+import { useAuthStore } from '@/stores/auth'
 import { today, weekPath } from '@/utils/date'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
+
+const showShell = computed(() => route.name !== 'login')
 
 const navItems = [
   { label: '首页', path: '/' },
@@ -34,10 +38,16 @@ const activePath = computed(() => {
 function navigate(path: string) {
   router.push(path)
 }
+
+function logout() {
+  auth.logout()
+  router.push('/login')
+}
 </script>
 
 <template>
-  <el-container class="app-layout">
+  <router-view v-if="!showShell" />
+  <el-container v-else class="app-layout">
     <el-header class="app-header">
       <div class="brand" @click="navigate('/')">WorkNote</div>
       <el-menu
@@ -51,6 +61,7 @@ function navigate(path: string) {
           {{ item.label }}
         </el-menu-item>
       </el-menu>
+      <el-button v-if="auth.authRequired" text @click="logout">退出</el-button>
     </el-header>
     <el-main class="app-main">
       <router-view />
