@@ -2,14 +2,14 @@ import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions'
 import serverless from 'serverless-http'
 import { createApp } from '../../server/app.js'
 
-let handler: ReturnType<typeof serverless> | null = null
+let serverlessHandler: ReturnType<typeof serverless> | null = null
 
-async function getHandler() {
-  if (!handler) {
+async function getServerlessHandler() {
+  if (!serverlessHandler) {
     const app = await createApp('/data')
-    handler = serverless(app)
+    serverlessHandler = serverless(app)
   }
-  return handler
+  return serverlessHandler
 }
 
 function normalizePath(event: HandlerEvent) {
@@ -18,7 +18,7 @@ function normalizePath(event: HandlerEvent) {
 }
 
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
-  const netlifyHandler = await getHandler()
+  const netlifyHandler = await getServerlessHandler()
   return netlifyHandler(
     {
       ...event,
