@@ -3,11 +3,11 @@ import express from 'express'
 import path from 'path'
 import { createBackupRouter } from './routes/backup.js'
 import { createEntriesRouter } from './routes/entries.js'
-import { initStorage } from './storage/backend.js'
+import { initStorage, getStorageKind, type StorageKind } from './storage/backend.js'
 import { ensureDir } from './storage/jsonStore.js'
 
-export async function createApp(dataDir: string) {
-  initStorage(dataDir)
+export async function createApp(dataDir: string, storage: StorageKind = 'filesystem') {
+  initStorage(dataDir, storage)
   await ensureDir(path.join(dataDir, 'entries'))
 
   const app = express()
@@ -18,7 +18,7 @@ export async function createApp(dataDir: string) {
     res.json({
       ok: true,
       dataDir,
-      storage: process.env.NETLIFY === 'true' ? 'netlify-blobs' : 'filesystem',
+      storage: getStorageKind(),
     })
   })
 

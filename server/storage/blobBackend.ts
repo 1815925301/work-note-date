@@ -8,10 +8,10 @@ function getBlobStore() {
   const token = process.env.NETLIFY_BLOB_READ_WRITE_TOKEN
 
   if (siteID && token) {
-    return getStore({ name: STORE_NAME, siteID, token, consistency: 'strong' })
+    return getStore({ name: STORE_NAME, siteID, token })
   }
 
-  return getStore({ name: STORE_NAME, consistency: 'strong' })
+  return getStore({ name: STORE_NAME })
 }
 
 export function createBlobBackend(): StorageBackend {

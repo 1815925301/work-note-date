@@ -7,7 +7,7 @@ let serverlessHandler: ReturnType<typeof serverless> | null = null
 
 async function getServerlessHandler() {
   if (!serverlessHandler) {
-    const app = await createApp('/data')
+    const app = await createApp('/data', 'netlify-blobs')
     serverlessHandler = serverless(app)
   }
   return serverlessHandler
